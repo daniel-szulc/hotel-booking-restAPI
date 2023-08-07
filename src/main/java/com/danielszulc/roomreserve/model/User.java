@@ -3,7 +3,6 @@ package com.danielszulc.roomreserve.model;
 import com.danielszulc.roomreserve.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.Set;
 
 @Data
 @Entity

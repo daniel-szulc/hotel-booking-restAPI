@@ -22,10 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
-
-
-
     @Bean
     public UserDetailsService detailsService() {
 
@@ -45,7 +41,6 @@ public class SecurityConfig {
         return provider;
     }
 
-
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
@@ -59,6 +54,7 @@ public class SecurityConfig {
                 requests
                         .requestMatchers(HttpMethod.POST,"/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/auth/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/auth/signin").permitAll()
                         .requestMatchers("/api/rooms/**").permitAll()
                         .requestMatchers("/api/reservation/**").hasRole("CLIENT")
                         .requestMatchers("/api/reservation").authenticated()
