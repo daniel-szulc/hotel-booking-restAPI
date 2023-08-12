@@ -3,7 +3,6 @@ package com.danielszulc.roomreserve.controller;
 import com.danielszulc.roomreserve.model.Room;
 import com.danielszulc.roomreserve.repository.RoomRepository;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

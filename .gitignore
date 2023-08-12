@@ -1,8 +1,8 @@
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+!app/src/main/**/target/
+!app/src/test/**/target/
 
 ### Java ###
 # Compiled class file
@@ -30,8 +30,8 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+!app/src/main/**/build/
+!app/src/test/**/build/
 
 ### VS Code ###
 .vscode/
@@ -59,7 +59,6 @@ hs_err_pid*
 replay_pid*
 
 ### Maven ###
-target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -71,8 +70,5 @@ buildNumber.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
+# Useful for local m2 cache when docker building
+.m2
