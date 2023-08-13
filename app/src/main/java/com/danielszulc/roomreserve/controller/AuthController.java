@@ -1,5 +1,6 @@
 package com.danielszulc.roomreserve.controller;
 
+import com.danielszulc.roomreserve.dto.AuthenticationResponse;
 import com.danielszulc.roomreserve.dto.SignIn;
 import com.danielszulc.roomreserve.dto.SignUp;
 import com.danielszulc.roomreserve.model.User;
@@ -7,7 +8,6 @@ import com.danielszulc.roomreserve.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,25 +24,20 @@ public class AuthController {
         try {
             res = userService.registerUser(signUpDto);
         } catch (Exception e) {
-            throw new BadCredentialsException(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        return new ResponseEntity<>(res, HttpStatus.OK);
-
+        return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<User> loginUser(@RequestBody SignIn loginDto){
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody SignIn loginDto) {
 
-
-        User res;
+        AuthenticationResponse res;
         try {
             res = userService.authenticateUser(loginDto);
-
         } catch (Exception e) {
-            throw new BadCredentialsException(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 

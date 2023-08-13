@@ -1,23 +1,24 @@
 package com.danielszulc.roomreserve.service;
 
+import com.danielszulc.roomreserve.config.JwtTokenUtil;
+import com.danielszulc.roomreserve.dto.AuthenticationResponse;
 import com.danielszulc.roomreserve.dto.SignIn;
 import com.danielszulc.roomreserve.dto.SignUp;
 import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.exception.EmailTakenException;
-import com.danielszulc.roomreserve.exception.InvalidPasswordException;
+import com.danielszulc.roomreserve.exception.InvalidLoginException;
 import com.danielszulc.roomreserve.exception.UsernameTakenException;
 import com.danielszulc.roomreserve.model.User;
 import com.danielszulc.roomreserve.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -28,7 +29,10 @@ public class UserService {
     private AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-    public User registerUser(SignUp signUpDto){
+    @Autowired
+    JwtTokenUtil jwtUtil;
+
+    public User registerUser(SignUp signUpDto) {
 
         // check if username exists
         if (userRepository.existsByUsername(signUpDto.getUsername())) {
@@ -52,31 +56,24 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User authenticateUser(SignIn loginDto){
+    public AuthenticationResponse authenticateUser(SignIn loginDto) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDto.getUsername(),
+                            loginDto.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword()
-                )
-        );
+            User user = (User) authentication.getPrincipal();
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            String accessToken = jwtUtil.generateAccessToken(user);
 
-        Optional<User> optionalUser = userRepository.findByUsername(loginDto.getUsername());
-
-        if (optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException("Username not found!");
+            return new AuthenticationResponse(user.getEmail(), accessToken);
+        } catch (BadCredentialsException e) {
+            throw new InvalidLoginException("Invalid username or password!");
         }
-
-        User user = optionalUser.get();
-
-        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new InvalidPasswordException("Invalid password!");
-        }
-
-        return user;
     }
-
 
 }
