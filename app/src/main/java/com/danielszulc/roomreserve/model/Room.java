@@ -1,9 +1,7 @@
 package com.danielszulc.roomreserve.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.danielszulc.roomreserve.enums.RoomType;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -13,7 +11,8 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String number;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private RoomType type;
     private double price;
     private boolean isAvailable;
 }

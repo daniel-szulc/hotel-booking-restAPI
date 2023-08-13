@@ -1,18 +1,17 @@
 package com.danielszulc.roomreserve;
 
 import com.danielszulc.roomreserve.config.JwtTokenUtil;
-import com.danielszulc.roomreserve.dto.AuthenticationResponse;
-import com.danielszulc.roomreserve.dto.SignIn;
-import com.danielszulc.roomreserve.dto.SignUp;
+import com.danielszulc.roomreserve.dto.*;
 import com.danielszulc.roomreserve.exception.EmailTakenException;
 import com.danielszulc.roomreserve.exception.InvalidLoginException;
+import com.danielszulc.roomreserve.exception.InvalidPasswordException;
 import com.danielszulc.roomreserve.exception.UsernameTakenException;
 import com.danielszulc.roomreserve.model.User;
 import com.danielszulc.roomreserve.repository.UserRepository;
 import com.danielszulc.roomreserve.service.UserService;
+import com.danielszulc.roomreserve.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -22,7 +21,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,7 +37,6 @@ public class UserServiceTest{
 
     private final String ENCODED_PASSWORD = "encodedPassword";
 
-    @InjectMocks
     private UserService userService;
     @MockBean
     private UserRepository userRepository;
@@ -47,6 +50,21 @@ public class UserServiceTest{
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        userService = new UserServiceImpl(userRepository, authenticationManager, passwordEncoder, jwtUtil);
+
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        User user = new User();
+        user.setUsername("testUser");
+        user.setEmail("test@email.com");
+        user.setPassword(ENCODED_PASSWORD);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user,
+                null,
+                Collections.emptyList()
+        );
+        securityContext.setAuthentication(authentication);
+
         when(passwordEncoder.encode(anyString())).thenReturn(ENCODED_PASSWORD);
         when(userRepository.save(any(User.class)))
                 .thenAnswer(i -> i.getArguments()[0]);
@@ -129,6 +147,95 @@ public class UserServiceTest{
 
 
         assertThrows(InvalidLoginException.class, () -> userService.authenticateUser(signInDto));
+    }
+
+    @Test
+    public void updateName_ShouldUpdateName_WhenPasswordAndFieldAreValid() {
+        UpdateRequest updateRequest = new UpdateRequest();
+        updateRequest.setPassword("Test@12345");
+        updateRequest.setField("New Name");
+
+        User currentUser = new User();
+        currentUser.setUsername("testUser");
+        currentUser.setPassword(passwordEncoder.encode("Test@12345"));
+
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+
+        String result = userService.updateName(updateRequest);
+
+        assertEquals("Name updated successfully!", result);
+        verify(userRepository).updateUserName(eq(currentUser.getUsername()), eq(updateRequest.getField()));
+    }
+
+    @Test
+    public void updateName_ShouldThrowInvalidPasswordException_WhenPasswordIsInvalid() {
+        UpdateRequest updateRequest = new UpdateRequest();
+        updateRequest.setPassword("InvalidPassword");
+        updateRequest.setField("New Name");
+
+        User currentUser = new User();
+        currentUser.setUsername("testUser");
+        currentUser.setPassword(passwordEncoder.encode("Test@12345"));
+
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(InvalidPasswordException.class, () -> userService.updateName(updateRequest));
+        verify(userRepository, never()).updateUserName(anyString(), anyString());
+    }
+
+    @Test
+    public void updatePassword_ShouldThrowInvalidPasswordException_WhenCurrentPasswordIsInvalid() {
+        UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest();
+        updatePasswordRequest.setCurrentPassword("InvalidPassword");
+        updatePasswordRequest.setNewPassword("New@Password");
+
+        User currentUser = new User();
+        currentUser.setUsername("testUser");
+        currentUser.setPassword(passwordEncoder.encode("Test@12345"));
+
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(InvalidPasswordException.class, () -> userService.updatePassword(updatePasswordRequest));
+        verify(userRepository, never()).updateUserPassword(anyString(), anyString());
+    }
+
+    @Test
+    public void updatePhone_ShouldUpdatePhone_WhenPasswordAndFieldAreValid() {
+        UpdateRequest updateRequest = new UpdateRequest();
+        updateRequest.setPassword("Test@12345");
+        updateRequest.setField("New Phone");
+
+        User currentUser = new User();
+        currentUser.setUsername("testUser");
+        currentUser.setPassword(passwordEncoder.encode("Test@12345"));
+
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
+
+        String result = userService.updatePhone(updateRequest);
+
+        assertEquals("Phone updated successfully!", result);
+        verify(userRepository).updateUserPhone(eq(currentUser.getUsername()), eq(updateRequest.getField()));
+    }
+
+    @Test
+    public void updatePhone_ShouldThrowInvalidPasswordException_WhenPasswordIsInvalid() {
+        UpdateRequest updateRequest = new UpdateRequest();
+        updateRequest.setPassword("InvalidPassword");
+        updateRequest.setField("New Phone");
+
+        User currentUser = new User();
+        currentUser.setUsername("testUser");
+        currentUser.setPassword(passwordEncoder.encode("Test@12345"));
+
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(InvalidPasswordException.class, () -> userService.updatePhone(updateRequest));
+        verify(userRepository, never()).updateUserPhone(anyString(), anyString());
     }
 
 }

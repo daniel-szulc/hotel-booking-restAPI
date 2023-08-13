@@ -47,12 +47,13 @@ public class SecurityConfig{
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests ->
                         requests
-                                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/signin").permitAll()
                                 .requestMatchers("/api/rooms/**").permitAll()
-                                .requestMatchers("/api/reservation/**").hasRole("CLIENT")
+                                .requestMatchers(HttpMethod.POST,"/api/rooms/**").hasRole("HOTEL")
                                 .requestMatchers("/api/reservation").authenticated()
+                                .requestMatchers("/api/user/**").authenticated()
+                                .requestMatchers("/api/client/**").hasRole("CLIENT")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/hotel/**").hasRole("HOTEL")
                                 .anyRequest().authenticated()
