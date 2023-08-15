@@ -21,11 +21,8 @@ public class AuthController {
     public ResponseEntity<User> registerUser(@RequestBody SignUp signUpDto){
 
         User res;
-        try {
-            res = userService.registerUser(signUpDto);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        res = userService.registerUser(signUpDto);
+
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
@@ -33,11 +30,8 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponse> login(@RequestBody SignIn loginDto) {
 
         AuthenticationResponse res;
-        try {
-            res = userService.authenticateUser(loginDto);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        res = userService.authenticateUser(loginDto);
+
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 

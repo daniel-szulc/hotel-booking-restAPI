@@ -1,4 +1,4 @@
-package com.danielszulc.roomreserve.model;
+package com.danielszulc.roomreserve.enums;
 
 public enum PaymentType {
     CREDIT_CARD,

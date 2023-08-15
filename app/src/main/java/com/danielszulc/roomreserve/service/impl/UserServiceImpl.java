@@ -28,7 +28,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-    @Autowired JwtTokenUtil jwtUtil;
+    @Autowired
+    private JwtTokenUtil jwtUtil;
 
     @Override
     public User registerUser(SignUp signUpDto) {

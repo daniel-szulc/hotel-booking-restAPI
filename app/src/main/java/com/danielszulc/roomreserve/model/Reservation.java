@@ -1,5 +1,6 @@
 package com.danielszulc.roomreserve.model;
 
+import com.danielszulc.roomreserve.enums.PaymentType;
 import com.danielszulc.roomreserve.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.Data;

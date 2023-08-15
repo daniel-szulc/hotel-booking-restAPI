@@ -5,6 +5,7 @@ import com.danielszulc.roomreserve.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -29,14 +30,16 @@ public class User implements UserDetails {
     private Gender gender;
     private String phone;
     @Embedded
+    @Transient
     private Address address;
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToMany(mappedBy = "user")
+    @Transient
     private List<Reservation> reservations;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return Collections.singletonList(new SimpleGrantedAuthority(this.role.name()));
     }
 
     @Override
