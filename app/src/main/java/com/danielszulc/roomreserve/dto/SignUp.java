@@ -6,7 +6,9 @@ import lombok.Data;
 @Data
 public class SignUp {
     @NotNull @NotEmpty @NotBlank
-    private String name;
+    private String firstName;
+    @NotNull @NotEmpty @NotBlank
+    private String lastName;
     @NotNull @NotEmpty @NotBlank
     private String username;
     @NotNull @NotEmpty @NotBlank @Email

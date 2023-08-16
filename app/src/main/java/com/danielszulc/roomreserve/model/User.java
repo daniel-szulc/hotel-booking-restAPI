@@ -22,7 +22,10 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String username;
+    private String firstName;
+    private String lastName;
     @Column(unique = true)
     private String email;
     private String password;
@@ -30,7 +33,6 @@ public class User implements UserDetails {
     private Gender gender;
     private String phone;
     @Embedded
-    @Transient
     private Address address;
     @Enumerated(EnumType.STRING)
     private Role role;

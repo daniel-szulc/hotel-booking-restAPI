@@ -2,7 +2,7 @@ package com.danielszulc.roomreserve.controller;
 
 import com.danielszulc.roomreserve.dto.SignUp;
 import com.danielszulc.roomreserve.dto.UpdatePasswordRequest;
-import com.danielszulc.roomreserve.dto.UpdateRequest;
+import com.danielszulc.roomreserve.dto.UserRequest;
 import com.danielszulc.roomreserve.model.User;
 import com.danielszulc.roomreserve.service.UserService;
 import jakarta.validation.Valid;
@@ -18,9 +18,9 @@ public class UserController {
 
     private UserService userService;
 
-    @PutMapping("/update/name")
-    public ResponseEntity<String> updateName(@RequestBody UpdateRequest updateRequest) {
-        String res = userService.updateName(updateRequest);
+    @GetMapping
+    public ResponseEntity<User> getUser() {
+        User res =  userService.getUserData();
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
@@ -30,17 +30,15 @@ public class UserController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
-    @PutMapping("/update/phone")
-    public ResponseEntity<String> updatePhone(@RequestBody UpdateRequest updateRequest) {
-        String res = userService.updatePhone(updateRequest);
+    @PutMapping("/update/personal")
+    public ResponseEntity<String> updatePersonalData(@RequestBody UserRequest userRequest) {
+        String res = userService.updatePersonalData(userRequest);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody @Valid SignUp signUpDto){
-
         User res = userService.createUserByAdmin(signUpDto);
-
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 }
