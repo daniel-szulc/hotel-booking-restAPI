@@ -5,6 +5,7 @@ import com.danielszulc.roomreserve.dto.SignIn;
 import com.danielszulc.roomreserve.dto.SignUp;
 import com.danielszulc.roomreserve.model.User;
 import com.danielszulc.roomreserve.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class AuthController {
      private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> registerUser(@RequestBody SignUp signUpDto){
+    public ResponseEntity<User> registerUser(@RequestBody @Valid  SignUp signUpDto){
 
         User res;
         res = userService.registerUser(signUpDto);
@@ -27,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody SignIn loginDto) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid SignIn loginDto) {
 
         AuthenticationResponse res;
         res = userService.authenticateUser(loginDto);

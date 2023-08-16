@@ -1,5 +1,6 @@
 package com.danielszulc.roomreserve.repository;
 
+import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,6 +25,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User u SET u.phone = :newPhone WHERE u.username = :username")
     void updateUserPhone(@Param("username") String username, @Param("newPhone") String newPhone);
-
 
 }

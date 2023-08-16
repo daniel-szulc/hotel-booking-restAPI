@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     private User getCurrentLoggedInUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByUsername(email);
         if (user.isEmpty()) {
             throw new UserNotFoundException("User not found!");
         }
@@ -125,6 +125,30 @@ public class UserServiceImpl implements UserService {
 
         log.info("Update successful");
         return "Phone updated successfully!";
+    }
+
+    @Override
+    public User createUserByAdmin(SignUp signUpDto) {
+
+        Role role = Role.ROLE_CLIENT;
+
+        if (signUpDto.getRole() != null) {
+            role = Role.valueOf(signUpDto.getRole());
+        }
+
+        // Validate that the user creating the new user is an admin
+        User currentUser = getCurrentLoggedInUser();
+        if (!currentUser.getRole().equals(Role.ROLE_ADMIN)) {
+            throw new UnauthorizedException("Only administrators can create users.");
+        }
+        // Create the new user
+        User user = new User();
+        user.setUsername(signUpDto.getUsername());
+        user.setEmail(signUpDto.getEmail());
+        user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        user.setRole(role);
+
+        return userRepository.save(user);
     }
 
 }

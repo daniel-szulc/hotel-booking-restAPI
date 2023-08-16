@@ -71,6 +71,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST,"/api/rooms/**").hasRole("HOTEL")
                                 .requestMatchers("/api/rooms/**").permitAll()
                                 .requestMatchers("/api/reservation").authenticated()
+                                .requestMatchers(HttpMethod.POST,"/api/user/create").hasRole("ADMIN")
                                 .requestMatchers("/api/user/**").authenticated()
                                 .requestMatchers("/api/client/**").hasRole("CLIENT")
                                 .requestMatchers("/api/admin").hasRole("ADMIN")

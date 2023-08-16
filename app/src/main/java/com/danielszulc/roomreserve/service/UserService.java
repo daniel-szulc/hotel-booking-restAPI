@@ -9,5 +9,5 @@ public interface UserService {
     String updateName(UpdateRequest updateRequest);
     String updatePassword(UpdatePasswordRequest updatePasswordRequest);
     String updatePhone(UpdateRequest updateRequest);
-
+    User createUserByAdmin(SignUp signUpDto);
 }
