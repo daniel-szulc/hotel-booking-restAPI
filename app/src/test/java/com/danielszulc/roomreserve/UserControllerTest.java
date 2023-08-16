@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.danielszulc.roomreserve.controller.UserController;
 import com.danielszulc.roomreserve.dto.UpdatePasswordRequest;
-import com.danielszulc.roomreserve.dto.UpdateRequest;
+import com.danielszulc.roomreserve.dto.UserRequest;
 import com.danielszulc.roomreserve.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,23 +37,6 @@ public class UserControllerTest {
     }
 
     @Test
-    public void updateName_ShouldReturnSuccessMessage_WhenNameIsUpdated() throws Exception {
-        UpdateRequest updateRequest = new UpdateRequest();
-        updateRequest.setPassword("Test@12345");
-        updateRequest.setField("New Name");
-
-        when(userService.updateName(any(UpdateRequest.class))).thenReturn("Name updated successfully!");
-
-        mockMvc.perform(put("/api/user/update/name")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Name updated successfully!"));
-
-        verify(userService).updateName(any(UpdateRequest.class));
-    }
-
-    @Test
     public void updatePassword_ShouldReturnSuccessMessage_WhenPasswordIsUpdated() throws Exception {
         UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest();
         updatePasswordRequest.setCurrentPassword("Test@12345");
@@ -72,18 +55,18 @@ public class UserControllerTest {
 
     @Test
     public void updatePhone_ShouldReturnSuccessMessage_WhenPhoneIsUpdated() throws Exception {
-        UpdateRequest updateRequest = new UpdateRequest();
-        updateRequest.setPassword("Test@12345");
-        updateRequest.setField("New Phone");
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPassword("Test@12345");
+        userRequest.setPhone("New Phone");
 
-        when(userService.updatePhone(any(UpdateRequest.class))).thenReturn("Phone updated successfully!");
+        when(userService.updatePersonalData(any(UserRequest.class))).thenReturn("Personal data updated successfully!");
 
-        mockMvc.perform(put("/api/user/update/phone")
+        mockMvc.perform(put("/api/user/update/personal")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)))
+                        .content(objectMapper.writeValueAsString(userRequest)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Phone updated successfully!"));
+                .andExpect(content().string("Personal data updated successfully!"));
 
-        verify(userService).updatePhone(any(UpdateRequest.class));
+        verify(userService).updatePersonalData(any(UserRequest.class));
     }
 }

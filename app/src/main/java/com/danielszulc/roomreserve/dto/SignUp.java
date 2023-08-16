@@ -13,8 +13,7 @@ public class SignUp {
     private String username;
     @NotNull @NotEmpty @NotBlank @Email
     private String email;
-    @NotNull
-   // @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}")
+    @NotNull @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}")
     private String password;
     @Pattern(regexp = "^ROLE_[A-Z_]+$")
     private String role;

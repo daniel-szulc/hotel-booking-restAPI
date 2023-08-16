@@ -77,6 +77,8 @@ public class UserServiceTest{
         signUpDto.setUsername("testUser");
         signUpDto.setEmail("test@email.com");
         signUpDto.setPassword("Test@12345");
+        signUpDto.setFirstName("Joe");
+        signUpDto.setLastName("Doe");
 
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
@@ -95,6 +97,8 @@ public class UserServiceTest{
         signUpDto.setUsername("testUser");
         signUpDto.setEmail("test@email.com");
         signUpDto.setPassword("Test@12345");
+        signUpDto.setFirstName("Joe");
+        signUpDto.setLastName("Doe");
 
         when(userRepository.existsByUsername(anyString())).thenReturn(true);
 
@@ -107,6 +111,8 @@ public class UserServiceTest{
         signUpDto.setUsername("testUser");
         signUpDto.setEmail("test@email.com");
         signUpDto.setPassword("Test@12345");
+        signUpDto.setFirstName("Joe");
+        signUpDto.setLastName("Doe");
 
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
@@ -150,39 +156,39 @@ public class UserServiceTest{
     }
 
     @Test
-    public void updateName_ShouldUpdateName_WhenPasswordAndFieldAreValid() {
-        UpdateRequest updateRequest = new UpdateRequest();
-        updateRequest.setPassword("Test@12345");
-        updateRequest.setField("New Name");
+    public void updateLastName_ShouldUpdateName_WhenPasswordAndFieldAreValid() {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPassword("Test@12345");
+        userRequest.setLastName("New Last Name");
 
         User currentUser = new User();
         currentUser.setUsername("testUser");
         currentUser.setPassword(passwordEncoder.encode("Test@12345"));
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
-        String result = userService.updateName(updateRequest);
+        String result = userService.updatePersonalData(userRequest);
 
-        assertEquals("Name updated successfully!", result);
-        verify(userRepository).updateUserName(eq(currentUser.getUsername()), eq(updateRequest.getField()));
+        assertEquals("Personal data updated successfully!", result);
+        verify(userRepository).updateLastName(eq(currentUser.getUsername()), eq(userRequest.getLastName()));
     }
 
     @Test
-    public void updateName_ShouldThrowInvalidPasswordException_WhenPasswordIsInvalid() {
-        UpdateRequest updateRequest = new UpdateRequest();
-        updateRequest.setPassword("InvalidPassword");
-        updateRequest.setField("New Name");
+    public void updateLastName_ShouldThrowInvalidPasswordException_WhenPasswordIsInvalid() {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPassword("InvalidPassword");
+        userRequest.setLastName("New Last Name");
 
         User currentUser = new User();
         currentUser.setUsername("testUser");
         currentUser.setPassword(passwordEncoder.encode("Test@12345"));
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-        assertThrows(InvalidPasswordException.class, () -> userService.updateName(updateRequest));
-        verify(userRepository, never()).updateUserName(anyString(), anyString());
+        assertThrows(InvalidPasswordException.class, () -> userService.updatePersonalData(userRequest));
+        verify(userRepository, never()).updateLastName(anyString(), anyString());
     }
 
     @Test
@@ -195,7 +201,7 @@ public class UserServiceTest{
         currentUser.setUsername("testUser");
         currentUser.setPassword(passwordEncoder.encode("Test@12345"));
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
         assertThrows(InvalidPasswordException.class, () -> userService.updatePassword(updatePasswordRequest));
@@ -204,37 +210,37 @@ public class UserServiceTest{
 
     @Test
     public void updatePhone_ShouldUpdatePhone_WhenPasswordAndFieldAreValid() {
-        UpdateRequest updateRequest = new UpdateRequest();
-        updateRequest.setPassword("Test@12345");
-        updateRequest.setField("New Phone");
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPassword("Test@12345");
+        userRequest.setPhone("New Phone");
 
         User currentUser = new User();
         currentUser.setUsername("testUser");
         currentUser.setPassword(passwordEncoder.encode("Test@12345"));
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
-        String result = userService.updatePhone(updateRequest);
+        String result = userService.updatePersonalData(userRequest);
 
-        assertEquals("Phone updated successfully!", result);
-        verify(userRepository).updateUserPhone(eq(currentUser.getUsername()), eq(updateRequest.getField()));
+        assertEquals("Personal data updated successfully!", result);
+        verify(userRepository).updateUserPhone(eq(currentUser.getUsername()), eq(userRequest.getPhone()));
     }
 
     @Test
     public void updatePhone_ShouldThrowInvalidPasswordException_WhenPasswordIsInvalid() {
-        UpdateRequest updateRequest = new UpdateRequest();
-        updateRequest.setPassword("InvalidPassword");
-        updateRequest.setField("New Phone");
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPassword("Invalid Password");
+        userRequest.setPhone("New Phone");
 
         User currentUser = new User();
         currentUser.setUsername("testUser");
         currentUser.setPassword(passwordEncoder.encode("Test@12345"));
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(currentUser));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(currentUser));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-        assertThrows(InvalidPasswordException.class, () -> userService.updatePhone(updateRequest));
+        assertThrows(InvalidPasswordException.class, () -> userService.updatePersonalData(userRequest));
         verify(userRepository, never()).updateUserPhone(anyString(), anyString());
     }
 

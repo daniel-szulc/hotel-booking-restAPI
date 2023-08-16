@@ -8,6 +8,7 @@ import com.danielszulc.roomreserve.controller.AuthController;
 import com.danielszulc.roomreserve.dto.AuthenticationResponse;
 import com.danielszulc.roomreserve.dto.SignIn;
 import com.danielszulc.roomreserve.dto.SignUp;
+import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.model.User;
 import com.danielszulc.roomreserve.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,11 +45,14 @@ public class AuthControllerTest {
         signUpDto.setUsername("testUser");
         signUpDto.setEmail("test@email.com");
         signUpDto.setPassword("Test@12345");
+        signUpDto.setFirstName("Joe");
+        signUpDto.setLastName("Doe");
 
         User user = new User();
         user.setUsername(signUpDto.getUsername());
         user.setEmail(signUpDto.getEmail());
         user.setPassword("encodedPassword");
+        user.setRole(Role.ROLE_CLIENT);
 
         when(userService.registerUser(any(SignUp.class))).thenReturn(user);
 
