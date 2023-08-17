@@ -1,13 +1,18 @@
 package com.danielszulc.roomreserve.service;
 
 import com.danielszulc.roomreserve.dto.*;
-import com.danielszulc.roomreserve.model.User;
+
+import java.util.List;
 
 public interface UserService {
-    User registerUser(SignUp signUpDto);
+    UserDTO registerUser(SignUp signUpDto);
     AuthenticationResponse authenticateUser(SignIn loginDto);
     String updatePassword(UpdatePasswordRequest updatePasswordRequest);
     String updatePersonalData(UserRequest userRequest);
-    User createUserByAdmin(SignUp signUpDto);
-    User getUserData();
+    UserDTO createUserByAdmin(SignUp signUpDto);
+    UserDTO getUserData();
+    String deleteUserByUsername(String username);
+    List<UserDTO> searchUsers(UserSearchRequest searchRequest);
+    UserDTO findUserByIdOrEmailOrUsername(Long id, String email, String username);
+
 }

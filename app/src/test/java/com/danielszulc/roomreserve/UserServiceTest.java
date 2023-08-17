@@ -6,9 +6,12 @@ import com.danielszulc.roomreserve.exception.EmailTakenException;
 import com.danielszulc.roomreserve.exception.InvalidLoginException;
 import com.danielszulc.roomreserve.exception.InvalidPasswordException;
 import com.danielszulc.roomreserve.exception.UsernameTakenException;
+import com.danielszulc.roomreserve.mapper.UserMapper;
 import com.danielszulc.roomreserve.model.User;
 import com.danielszulc.roomreserve.repository.UserRepository;
+import com.danielszulc.roomreserve.service.AuthenticationService;
 import com.danielszulc.roomreserve.service.UserService;
+import com.danielszulc.roomreserve.service.UserValidator;
 import com.danielszulc.roomreserve.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,11 +49,17 @@ public class UserServiceTest{
     private PasswordEncoder passwordEncoder;
     @Mock
     private JwtTokenUtil jwtUtil;
+    @Mock
+    private UserValidator userValidator;
+    @Mock
+    private UserMapper userMapper;
+    @Mock
+    private AuthenticationService authenticationService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserServiceImpl(userRepository, authenticationManager, passwordEncoder, jwtUtil);
+        userService = new UserServiceImpl(userRepository, authenticationManager, passwordEncoder, jwtUtil, userValidator, userMapper, authenticationService);
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         User user = new User();
@@ -83,10 +92,9 @@ public class UserServiceTest{
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
 
-        User result = userService.registerUser(signUpDto);
+        UserDTO result = userService.registerUser(signUpDto);
 
         assertNotNull(result);
-        assertNotNull(result.getRole());
         assertEquals("testUser", result.getUsername());
         assertEquals("test@email.com", result.getEmail());
     }

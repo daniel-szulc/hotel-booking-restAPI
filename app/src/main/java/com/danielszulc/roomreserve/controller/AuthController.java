@@ -3,7 +3,7 @@ package com.danielszulc.roomreserve.controller;
 import com.danielszulc.roomreserve.dto.AuthenticationResponse;
 import com.danielszulc.roomreserve.dto.SignIn;
 import com.danielszulc.roomreserve.dto.SignUp;
-import com.danielszulc.roomreserve.model.User;
+import com.danielszulc.roomreserve.dto.UserDTO;
 import com.danielszulc.roomreserve.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,9 +19,9 @@ public class AuthController {
      private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> registerUser(@RequestBody @Valid  SignUp signUpDto){
+    public ResponseEntity<UserDTO> registerUser(@RequestBody @Valid  SignUp signUpDto){
 
-        User res;
+        UserDTO res;
         res = userService.registerUser(signUpDto);
 
         return new ResponseEntity<>(res, HttpStatus.CREATED);

@@ -66,11 +66,14 @@ Set the database URL, username, and password in the `application.properties` fil
 | GET    | `/api/user`                   | Retrieve the authenticated user’s details     | Authenticated |
 | PUT    | `/api/user/update/password`   | Update the authenticated user’s password      | Authenticated |
 | PUT    | `/api/user/update/personal`   | Update the authenticated user’s personal data | Authenticated |
-| POST   | `/api/user/create`            | Create a new user with specific role          | ADMIN       |
+| POST   | `/api/user/create`          | Create a new user with specific role          | ADMIN       |
+| DELETE | `/api/user/**`              | Delete a user                                 | ADMIN       |
+| GET    | `/api/user/search`          | Search for users based on some criteria       | HOTEL, ADMIN |
+| GET    | `/api/user/find`            | Find a specific user                          | HOTEL, ADMIN |
 
 The API is also documented using Swagger UI, which allows you to test endpoints directly from your browser.
 
-🔗 The Swagger UI page will then be available at `http://server:port/context-path/swagger-ui.html`  and the OpenAPI description will be available at the following url for json format: `http://server:port/context-path/v3/api-docs`
+🔗 The Swagger UI page will then be available at `http://server:port/swagger-ui.html`  and the OpenAPI description will be available at the following url for json format: `http://server:port/v3/api-docs`
 
 For example, if you are running the application locally, it would be:
 http://localhost:8080/swagger-ui.html
@@ -93,4 +96,4 @@ By default, the application is initialized with an administrator account:
 
 ## License 📄
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -36,6 +36,28 @@ public class DefaultExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(re);
     }
 
+    @ExceptionHandler({ AccessDeniedException.class })
+    @ResponseBody
+    public ResponseEntity<RestError> handleAccessDeniedException(AccessDeniedException ex) {
+        RestError re = new RestError();
+        re.setTimestamp(LocalDateTime.now());
+        re.setMessage(ex.getMessage());
+        re.setDetails(HttpStatus.FORBIDDEN.toString());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(re);
+    }
+
+    @ExceptionHandler({ UserNotFoundException.class })
+    @ResponseBody
+    public ResponseEntity<RestError> handle(UserNotFoundException ex) {
+        RestError re = new RestError();
+        re.setTimestamp(LocalDateTime.now());
+        re.setMessage(ex.getMessage());
+        re.setDetails(HttpStatus.NOT_FOUND.toString());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(re);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<RestError> myAnyExceptionHandler(Exception ex, WebRequest req){
         RestError re = new RestError();
