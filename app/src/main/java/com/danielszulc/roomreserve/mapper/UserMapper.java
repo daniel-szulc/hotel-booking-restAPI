@@ -1,7 +1,7 @@
 package com.danielszulc.roomreserve.mapper;
 
 import com.danielszulc.roomreserve.dto.SignUp;
-import com.danielszulc.roomreserve.dto.UserDTO;
+import com.danielszulc.roomreserve.dto.PersonDTO;
 import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.model.User;
 import org.springframework.beans.BeanUtils;
@@ -10,15 +10,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserMapper {
-
+public class UserMapper<T> {
     @Autowired
-    private  PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
-    public UserDTO convertToDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        BeanUtils.copyProperties(user, userDTO);
-        return userDTO;
+    public PersonDTO convertToDTO(T entity) {
+        PersonDTO personDTO = new PersonDTO();
+        BeanUtils.copyProperties(entity, personDTO);
+        return personDTO;
     }
 
     public User convertToEntity(SignUp signUpDto){
@@ -29,9 +28,11 @@ public class UserMapper {
         User user = new User();
         user.setUsername(signUpDto.getUsername());
         user.setEmail(signUpDto.getEmail());
+        user.setFirstName(signUpDto.getFirstName());
+        user.setLastName(signUpDto.getLastName());
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
         user.setRole(role);
         return user;
     }
-}
 
+}

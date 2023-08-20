@@ -2,6 +2,7 @@ package com.danielszulc.roomreserve.controller;
 
 import com.danielszulc.roomreserve.dto.*;
 import com.danielszulc.roomreserve.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,14 +13,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
+@Tag(name = "User")
 @AllArgsConstructor
 public class UserController {
 
     private UserService userService;
 
+    @GetMapping("/all")
+    public ResponseEntity<List<PersonDTO>> getAll()
+    {
+        List<PersonDTO> persons = userService.getAll();
+        return new ResponseEntity<>(persons, HttpStatus.OK);
+    }
+
     @GetMapping
-    public ResponseEntity<UserDTO> getUser() {
-        UserDTO res = userService.getUserData();
+    public ResponseEntity<PersonDTO> getUser() {
+        PersonDTO res = userService.getUserData();
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
@@ -42,24 +51,24 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid SignUp signUpDto) {
-        UserDTO res = userService.createUserByAdmin(signUpDto);
+    public ResponseEntity<PersonDTO> createUser(@RequestBody @Valid SignUp signUpDto) {
+        PersonDTO res = userService.createUserByAdmin(signUpDto);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<UserDTO>> searchUsers(@RequestBody UserSearchRequest searchRequest) {
-        List<UserDTO> users = userService.searchUsers(searchRequest);
+    public ResponseEntity<List<PersonDTO>> searchUsers(@RequestBody UserSearchRequest searchRequest) {
+        List<PersonDTO> users = userService.searchUsers(searchRequest);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/find")
-    public ResponseEntity<UserDTO> getUser(
+    public ResponseEntity<PersonDTO> getUser(
             @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "username", required = false) String username
     ) {
-        UserDTO userDTO = userService.findUserByIdOrEmailOrUsername(id, email, username);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        PersonDTO personDTO = userService.findUserByIdOrEmailOrUsername(id, email, username);
+        return new ResponseEntity<>(personDTO, HttpStatus.OK);
     }
 }

@@ -2,20 +2,20 @@ package com.danielszulc.roomreserve.service.impl;
 
 import com.danielszulc.roomreserve.config.JwtTokenUtil;
 import com.danielszulc.roomreserve.dto.*;
-import com.danielszulc.roomreserve.enums.Gender;
 import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.exception.*;
 import com.danielszulc.roomreserve.mapper.UserMapper;
 import com.danielszulc.roomreserve.model.User;
+import com.danielszulc.roomreserve.repository.PersonRepository;
 import com.danielszulc.roomreserve.repository.UserRepository;
 import com.danielszulc.roomreserve.service.AuthenticationService;
 import com.danielszulc.roomreserve.service.UserService;
 import com.danielszulc.roomreserve.service.UserValidator;
+import com.danielszulc.roomreserve.utils.SpecificationUtils;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,23 +24,26 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends PersonServiceImpl<User> implements UserService {
 
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtUtil;
     private final UserValidator userValidator;
-    private final UserMapper userMapper;
     private final AuthenticationService authenticationService;
 
     @Override
-    public UserDTO registerUser(SignUp signUpDto) {
+    public PersonRepository<User> getRepository() {
+        return userRepository;
+    }
+
+
+    @Override
+    public PersonDTO registerUser(SignUp signUpDto) {
         userValidator.validateUsernameAndEmailAvailability(
                 signUpDto.getUsername(), signUpDto.getEmail()
         );
@@ -100,46 +103,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public String updatePersonalData(UserRequest userRequest) {
         User currentUser = getCurrentLoggedInUser();
-        userValidator.validatePassword(currentUser.getPassword(), userRequest.getPassword());
+        User user;
 
-        boolean updateOccurred = false;
-
-        if (userRequest.getFirstName() != null && !userRequest.getFirstName().isEmpty()) {
-            userRepository.updateFirstName(currentUser.getUsername(), userRequest.getFirstName());
-            updateOccurred = true;
+        if(currentUser.getUsername() == userRequest.getUsername()
+                || currentUser.getId() == userRequest.getId()
+                || currentUser.getEmail() == userRequest.getEmail())
+        {
+            userValidator.validatePassword(currentUser.getPassword(), userRequest.getPassword());
+            user = currentUser;
+        }
+        else
+        {
+            userValidator.validateAdminPermissions(currentUser);
+            user = userRepository.findByUsername(userRequest.getUsername())
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
         }
 
-        if (userRequest.getLastName() != null && !userRequest.getLastName().isEmpty()) {
-            userRepository.updateLastName(currentUser.getUsername(), userRequest.getLastName());
-            updateOccurred = true;
-        }
+        userRequest.setId(user.getId());
 
-        if (userRequest.getPhone() != null && !userRequest.getPhone().isEmpty()) {
-            userRepository.updateUserPhone(currentUser.getUsername(), userRequest.getPhone());
-            updateOccurred = true;
-        }
-
-        if (userRequest.getAddress() != null) {
-            userRepository.updateUserAddress(currentUser.getUsername(), userRequest.getAddress());
-            updateOccurred = true;
-        }
-
-        if (userRequest.getGender() != null) {
-            Gender newGender = Gender.valueOf(userRequest.getGender().toUpperCase());
-            userRepository.updateUserGender(currentUser.getUsername(), newGender);
-            updateOccurred = true;
-        }
-
-        if (updateOccurred) {
-            log.info("Update successful");
-            return "Personal data updated successfully!";
-        } else {
-            throw new IllegalArgumentException("No valid field specified for update.");
-        }
+        return super.updatePersonalData(userRequest);
     }
 
     @Override
-    public UserDTO createUserByAdmin(SignUp signUpDto) {
+    public PersonDTO createUserByAdmin(SignUp signUpDto) {
         Role role = determineUserRole(signUpDto.getRole());
         userValidator.validateAdminPermissions(getCurrentLoggedInUser());
 
@@ -149,7 +135,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserData(){
+    public PersonDTO getUserData(){
         User user = getCurrentLoggedInUser();
         return userMapper.convertToDTO(user);
     }
@@ -165,64 +151,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> searchUsers(UserSearchRequest searchRequest) {
-        Specification<User> spec = (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
+    public List<PersonDTO> searchUsers(UserSearchRequest searchRequest) {
+        User currentUser = getCurrentLoggedInUser();
+        Specification<User> roleBasedSpec = SpecificationUtils.createRoleBasedSpecification(currentUser.getRole());
 
-            User currentUser = getCurrentLoggedInUser();
-            if (Role.ROLE_ADMIN.equals(currentUser.getRole())) {
-                // Admin can search for everyone, so we don't add any additional condition
-            }
-            else if (Role.ROLE_HOTEL.equals(currentUser.getRole())) {
-                // The hotel can only search for customers
-                predicates.add(cb.equal(root.get("role"), "ROLE_CLIENT"));
-            } else {
-                throw new UnauthorizedException("Clients are not allowed to search for users");
-            }
+        Specification<User> spec = (root, query, cb) -> {
+            List<Predicate> predicates = SpecificationUtils.createPersonPredicates(root, cb, searchRequest.getEmail(), searchRequest.getFirstName(), searchRequest.getLastName(), searchRequest.getPhone(), searchRequest.getAddress());
+
+            predicates.add(roleBasedSpec.toPredicate(root, query, cb));
 
             if (searchRequest.getUsername() != null && !searchRequest.getUsername().isEmpty()) {
                 predicates.add(cb.like(root.get("username"), "%" + searchRequest.getUsername() + "%"));
             }
-
-            if (searchRequest.getEmail() != null && !searchRequest.getEmail().isEmpty()) {
-                predicates.add(cb.like(root.get("email"), "%" + searchRequest.getEmail() + "%"));
-            }
-
-            if (searchRequest.getFirstName() != null && !searchRequest.getFirstName().isEmpty()) {
-                predicates.add(cb.like(root.get("firstName"), "%" + searchRequest.getFirstName() + "%"));
-            }
-
-            if (searchRequest.getLastName() != null && !searchRequest.getLastName().isEmpty()) {
-                predicates.add(cb.like(root.get("lastName"), "%" + searchRequest.getLastName() + "%"));
-            }
-
-            if (searchRequest.getPhone() != null && !searchRequest.getPhone().isEmpty()) {
-                predicates.add(cb.like(root.get("phone"), "%" + searchRequest.getPhone() + "%"));
-            }
-
-            if (searchRequest.getAddress() != null) {
-
-                if (searchRequest.getAddress().getCity() != null && !searchRequest.getAddress().getCity().isEmpty()) {
-                    predicates.add(cb.like(root.get("address").get("city"), "%" + searchRequest.getAddress().getCity() + "%"));
-                }
-
-                if (searchRequest.getAddress().getStreetAddress() != null && !searchRequest.getAddress().getStreetAddress().isEmpty()) {
-                    predicates.add(cb.like(root.get("address").get("streetAddress"), "%" + searchRequest.getAddress().getStreetAddress() + "%"));
-                }
-
-                if (searchRequest.getAddress().getPostalCode() != null && !searchRequest.getAddress().getPostalCode().isEmpty()) {
-                    predicates.add(cb.like(root.get("address").get("postalCode"), "%" + searchRequest.getAddress().getPostalCode() + "%"));
-                }
-
-                if (searchRequest.getAddress().getState() != null && !searchRequest.getAddress().getState().isEmpty()) {
-                    predicates.add(cb.like(root.get("address").get("state"), "%" + searchRequest.getAddress().getState() + "%"));
-                }
-
-                if (searchRequest.getAddress().getCountry() != null && !searchRequest.getAddress().getCountry().isEmpty()) {
-                    predicates.add(cb.like(root.get("address").get("country"), "%" + searchRequest.getAddress().getCountry() + "%"));
-                }
-            }
-
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -231,7 +171,7 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(this.userMapper::convertToDTO).toList();
     }
 
-    public UserDTO findUserByIdOrEmailOrUsername(Long id, String email, String username) {
+    public PersonDTO findUserByIdOrEmailOrUsername(Long id, String email, String username) {
         User user = null;
 
         if (id != null) {
@@ -258,6 +198,23 @@ public class UserServiceImpl implements UserService {
         }
 
         return userMapper.convertToDTO(user);
+    }
+
+    @Override
+    public List<PersonDTO> getAll() {
+        User currentUser = getCurrentLoggedInUser();
+        Specification<User> roleBasedSpec = SpecificationUtils.createRoleBasedSpecification(currentUser.getRole());
+
+        Specification<User> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(roleBasedSpec.toPredicate(root, query, cb));
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<User> users = userRepository.findAll(spec);
+        return users.stream().map(this.userMapper::convertToDTO).toList();
     }
 
 }

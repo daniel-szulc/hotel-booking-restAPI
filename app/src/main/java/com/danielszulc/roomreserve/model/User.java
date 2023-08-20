@@ -1,44 +1,25 @@
 package com.danielszulc.roomreserve.model;
 
-import com.danielszulc.roomreserve.enums.Gender;
 import com.danielszulc.roomreserve.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Data
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username"}),
-        @UniqueConstraint(columnNames = {"email"})
 })
-public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(unique = true)
+public class User extends Person implements UserDetails {
     private String username;
-    private String firstName;
-    private String lastName;
-    @Column(unique = true)
-    private String email;
     private String password;
     @Enumerated(EnumType.STRING)
-    private Gender gender;
-    private String phone;
-    @Embedded
-    private Address address;
-    @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "user")
-    @Transient
-    private List<Reservation> reservations;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.role.name()));

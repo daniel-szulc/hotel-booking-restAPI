@@ -2,11 +2,13 @@ package com.danielszulc.roomreserve.controller;
 
 import com.danielszulc.roomreserve.model.Room;
 import com.danielszulc.roomreserve.repository.RoomRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/rooms")
+@Tag(name = "Room")
 public class RoomController {
     private final RoomRepository roomRepository;
 

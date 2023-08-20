@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
 public class UserValidatorImpl implements UserValidator {
 
@@ -37,7 +40,42 @@ public class UserValidatorImpl implements UserValidator {
     @Override
     public void validateAdminPermissions(User user) {
         if (!user.getRole().equals(Role.ROLE_ADMIN)) {
-            throw new AccessDeniedException("Only administrators can create users.");
+            throw new AccessDeniedException("Unauthorized access. This operation is restricted to administrators.");
+        }
+    }
+
+    @Override
+    public void validateHotelPermissions(User user) {
+        if (!user.getRole().equals(Role.ROLE_HOTEL)) {
+            throw new AccessDeniedException("\"Unauthorized access. This operation is restricted to hotel staff only.");
+        }
+    }
+
+    @Override
+    public void validateAdminOrHotelPermissions(User user) {
+        Role userRole = user.getRole();
+
+        if (!(userRole.equals(Role.ROLE_ADMIN) || userRole.equals(Role.ROLE_HOTEL))) {
+            throw new AccessDeniedException("Unauthorized access. This operation is restricted to administrators and hotel staff.");
+        }
+    }
+
+    @Override
+    public void validatePermissions(User user, Role role) {
+        validatePermissions(user, List.of(role));
+    }
+
+    @Override
+    public void validatePermissions(User user, Collection<Role> allowedRoles) {
+        Role userRole = user.getRole();
+
+        if (!allowedRoles.contains(userRole)) {
+            String allowedRolesString = allowedRoles.stream()
+                    .map(Role::name)
+                    .reduce((role1, role2) -> role1 + " or " + role2)
+                    .orElse("");
+
+            throw new AccessDeniedException("Unauthorized access. This operation is restricted to " + allowedRolesString + " only.");
         }
     }
 

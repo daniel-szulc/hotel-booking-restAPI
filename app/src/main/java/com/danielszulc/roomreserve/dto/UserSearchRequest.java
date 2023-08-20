@@ -1,14 +1,10 @@
 package com.danielszulc.roomreserve.dto;
 
-import com.danielszulc.roomreserve.model.Address;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class UserSearchRequest {
+public class UserSearchRequest extends PersonRequest {
     private String username;
-    private String email;
-    private String firstName;
-    private String lastName;
-    private String phone;
-    private Address address;
 }

@@ -14,7 +14,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    private User user;
+    private Person guest;
     @ManyToOne
     private Room room;
     private LocalDate startDate;
@@ -22,7 +22,6 @@ public class Reservation {
     private Integer noOfPerson;
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
-
     @Enumerated(EnumType.STRING)
     private PaymentType payment;
 }

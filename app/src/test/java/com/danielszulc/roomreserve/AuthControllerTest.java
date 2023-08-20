@@ -8,7 +8,7 @@ import com.danielszulc.roomreserve.controller.AuthController;
 import com.danielszulc.roomreserve.dto.AuthenticationResponse;
 import com.danielszulc.roomreserve.dto.SignIn;
 import com.danielszulc.roomreserve.dto.SignUp;
-import com.danielszulc.roomreserve.dto.UserDTO;
+import com.danielszulc.roomreserve.dto.PersonDTO;
 import com.danielszulc.roomreserve.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +47,7 @@ public class AuthControllerTest {
         signUpDto.setFirstName("Joe");
         signUpDto.setLastName("Doe");
 
-        UserDTO user = new UserDTO();
+        PersonDTO user = new PersonDTO();
         user.setUsername(signUpDto.getUsername());
         user.setEmail(signUpDto.getEmail());
 

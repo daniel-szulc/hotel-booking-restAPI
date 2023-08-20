@@ -3,7 +3,6 @@ package com.danielszulc.roomreserve;
 import com.danielszulc.roomreserve.config.JwtTokenUtil;
 import com.danielszulc.roomreserve.dto.*;
 import com.danielszulc.roomreserve.exception.EmailTakenException;
-import com.danielszulc.roomreserve.exception.InvalidLoginException;
 import com.danielszulc.roomreserve.exception.InvalidPasswordException;
 import com.danielszulc.roomreserve.exception.UsernameTakenException;
 import com.danielszulc.roomreserve.mapper.UserMapper;
@@ -20,8 +19,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -44,22 +41,20 @@ public class UserServiceTest{
     @MockBean
     private UserRepository userRepository;
     @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private JwtTokenUtil jwtUtil;
     @Mock
     private UserValidator userValidator;
     @Mock
-    private UserMapper userMapper;
+    private UserMapper<User> userMapper;
     @Mock
     private AuthenticationService authenticationService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserServiceImpl(userRepository, authenticationManager, passwordEncoder, jwtUtil, userValidator, userMapper, authenticationService);
+        userService = new UserServiceImpl(userRepository, passwordEncoder, jwtUtil, userValidator, authenticationService);
 
         SecurityContext securityContext = SecurityContextHolder.getContext();
         User user = new User();
@@ -92,7 +87,7 @@ public class UserServiceTest{
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
 
-        UserDTO result = userService.registerUser(signUpDto);
+        PersonDTO result = userService.registerUser(signUpDto);
 
         assertNotNull(result);
         assertEquals("testUser", result.getUsername());
@@ -136,9 +131,6 @@ public class UserServiceTest{
         User user = new User();
         user.setEmail("test@test.com");
         Authentication auth = Mockito.mock(Authentication.class);
-
-        Mockito.when(authenticationManager.authenticate(
-                any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
         Mockito.when(auth.getPrincipal()).thenReturn(user);
         Mockito.when(jwtUtil.generateAccessToken(user)).thenReturn("some_token");
 
@@ -147,20 +139,6 @@ public class UserServiceTest{
         assertNotNull(response);
         assertEquals("test@test.com", response.getEmail());
         assertEquals("some_token", response.getToken());
-    }
-
-    @Test
-    public void authenticateUser_ShouldThrowInvalidLoginException_WhenCredentialsAreInvalid() {
-        SignIn signInDto = new SignIn();
-        signInDto.setUsername("testUsername");
-        signInDto.setPassword("testPassword");
-
-        Mockito.when(authenticationManager.authenticate(
-                        any(UsernamePasswordAuthenticationToken.class)))
-                .thenThrow(new BadCredentialsException("Invalid username or password!"));
-
-
-        assertThrows(InvalidLoginException.class, () -> userService.authenticateUser(signInDto));
     }
 
     @Test
@@ -179,7 +157,7 @@ public class UserServiceTest{
         String result = userService.updatePersonalData(userRequest);
 
         assertEquals("Personal data updated successfully!", result);
-        verify(userRepository).updateLastName(eq(currentUser.getUsername()), eq(userRequest.getLastName()));
+        verify(userRepository).updateLastName(eq(currentUser.getId()), eq(userRequest.getLastName()));
     }
 
     @Test
@@ -196,7 +174,7 @@ public class UserServiceTest{
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
         assertThrows(InvalidPasswordException.class, () -> userService.updatePersonalData(userRequest));
-        verify(userRepository, never()).updateLastName(anyString(), anyString());
+        verify(userRepository, never()).updateLastName(anyLong(), anyString());
     }
 
     @Test
@@ -232,7 +210,7 @@ public class UserServiceTest{
         String result = userService.updatePersonalData(userRequest);
 
         assertEquals("Personal data updated successfully!", result);
-        verify(userRepository).updateUserPhone(eq(currentUser.getUsername()), eq(userRequest.getPhone()));
+        verify(userRepository).updatePhone(eq(currentUser.getId()), eq(userRequest.getPhone()));
     }
 
     @Test
@@ -249,7 +227,7 @@ public class UserServiceTest{
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
         assertThrows(InvalidPasswordException.class, () -> userService.updatePersonalData(userRequest));
-        verify(userRepository, never()).updateUserPhone(anyString(), anyString());
+        verify(userRepository, never()).updatePhone(anyLong(), anyString());
     }
 
 }
