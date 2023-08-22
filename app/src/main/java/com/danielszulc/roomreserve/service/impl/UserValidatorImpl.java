@@ -3,6 +3,7 @@ package com.danielszulc.roomreserve.service.impl;
 import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.exception.*;
 import com.danielszulc.roomreserve.model.User;
+import com.danielszulc.roomreserve.repository.GuestRepository;
 import com.danielszulc.roomreserve.repository.UserRepository;
 import com.danielszulc.roomreserve.service.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,25 @@ public class UserValidatorImpl implements UserValidator {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private GuestRepository guestRepository;
+
     @Override
     public void validateUsernameAndEmailAvailability(String username, String email) {
         if (userRepository.existsByUsername(username)) {
             throw new UsernameTakenException("Username is already taken!");
         }
 
+        validateEmailAvailability(email);
+    }
+
+    @Override
+    public void validateEmailAvailability(String email) {
         if (userRepository.existsByEmail(email)) {
+            throw new EmailTakenException("Email is already taken!");
+        }
+
+        if (guestRepository.existsByEmail(email)) {
             throw new EmailTakenException("Email is already taken!");
         }
     }

@@ -30,7 +30,7 @@ public abstract class Person {
     @Embedded
     private Address address;
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     @Transient
     private List<Reservation> reservations;
 

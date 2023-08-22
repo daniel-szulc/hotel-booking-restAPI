@@ -1,10 +1,10 @@
-package com.danielszulc.roomreserve;
+package com.danielszulc.roomreserve.controller;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.danielszulc.roomreserve.controller.UserController;
+import com.danielszulc.roomreserve.dto.PersonDTO;
 import com.danielszulc.roomreserve.dto.UpdatePasswordRequest;
 import com.danielszulc.roomreserve.dto.UserRequest;
 import com.danielszulc.roomreserve.service.UserService;
@@ -19,8 +19,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ExtendWith(MockitoExtension.class)
-public class UserControllerTest {
+class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
@@ -34,10 +37,11 @@ public class UserControllerTest {
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
         objectMapper = new ObjectMapper();
+
     }
 
     @Test
-    public void updatePassword_ShouldReturnSuccessMessage_WhenPasswordIsUpdated() throws Exception {
+    void updatePassword_ShouldReturnSuccessMessage_WhenPasswordIsUpdated() throws Exception {
         UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest();
         updatePasswordRequest.setCurrentPassword("Test@12345");
         updatePasswordRequest.setNewPassword("New@Password");
@@ -54,7 +58,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void updatePhone_ShouldReturnSuccessMessage_WhenPhoneIsUpdated() throws Exception {
+    void updatePhone_ShouldReturnSuccessMessage_WhenPhoneIsUpdated() throws Exception {
         UserRequest userRequest = new UserRequest();
         userRequest.setPassword("Test@12345");
         userRequest.setPhone("New Phone");
@@ -68,5 +72,45 @@ public class UserControllerTest {
                 .andExpect(content().string("Personal data updated successfully!"));
 
         verify(userService).updatePersonalData(any(UserRequest.class));
+    }
+
+    @Test
+    void getAllUsers_ShouldReturnListOfUsers() throws Exception {
+        List<PersonDTO> personDTOList = new ArrayList<>();
+        PersonDTO personDTO = new PersonDTO();
+        personDTOList.add(personDTO);
+
+        when(userService.getAll()).thenReturn(personDTOList);
+
+        mockMvc.perform(get("/api/user/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(personDTOList)));
+
+        verify(userService).getAll();
+    }
+
+    @Test
+    void getUserData_ShouldReturnUserDetails() throws Exception {
+        PersonDTO personDTO = new PersonDTO();
+
+        when(userService.getUserData()).thenReturn(personDTO);
+
+        mockMvc.perform(get("/api/user")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(personDTO)));
+
+        verify(userService).getUserData();
+    }
+
+    @Test
+    void deleteUser_ShouldReturnSuccessMessage_WhenUserIsDeleted() throws Exception {
+        mockMvc.perform(delete("/api/user/{username}", "testUser")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("User deleted successfully!"));
+
+        verify(userService).deleteUserByUsername("testUser");
     }
 }

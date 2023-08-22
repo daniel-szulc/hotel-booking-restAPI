@@ -8,6 +8,7 @@ import com.danielszulc.roomreserve.model.Person;
 import com.danielszulc.roomreserve.repository.PersonRepository;
 import com.danielszulc.roomreserve.service.PersonService;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public abstract class PersonServiceImpl<T extends Person> implements PersonService {
     public abstract PersonRepository<T> getRepository();
     @Autowired
+    @Setter
     protected UserMapper<T> userMapper;
 
     public String updatePersonalData(PersonRequest request) {

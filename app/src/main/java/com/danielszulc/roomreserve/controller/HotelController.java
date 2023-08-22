@@ -8,6 +8,7 @@ import com.danielszulc.roomreserve.service.GuestService;
 import com.danielszulc.roomreserve.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class HotelController {
     private GuestService guestService;
     private UserService userService;
 
-    @GetMapping("/guest/all")
+    @GetMapping("/allGuests")
     public ResponseEntity<List<PersonDTO>> getAll()
     {
         List<PersonDTO> persons = new ArrayList<>();
@@ -33,15 +34,23 @@ public class HotelController {
         return new ResponseEntity<>(persons, HttpStatus.OK);
     }
 
-    @GetMapping("/guest/search")
+    @GetMapping("/searchGuests")
     public ResponseEntity<List<PersonDTO>> searchAll(@RequestBody PersonRequest searchRequest) {
         List<PersonDTO> persons = new ArrayList<>();
-        persons.addAll(userService.searchUsers((UserSearchRequest) searchRequest));
-        persons.addAll(guestService.searchGuests((GuestRequest) searchRequest));
+
+        UserSearchRequest userSearchRequest = new UserSearchRequest();
+        BeanUtils.copyProperties(searchRequest, userSearchRequest);
+
+        GuestRequest guestRequest = new GuestRequest();
+        BeanUtils.copyProperties(searchRequest, guestRequest);
+
+        persons.addAll(userService.searchUsers(userSearchRequest));
+
+        persons.addAll(guestService.searchGuests(guestRequest));
         return new ResponseEntity<>(persons, HttpStatus.OK);
     }
 
-    @GetMapping("/guest/find")
+    @GetMapping("/findGuest")
     public ResponseEntity<PersonDTO> getGuest(
             @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "email", required = false) String email,

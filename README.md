@@ -57,24 +57,26 @@ Set the database URL, username, and password in the `application.properties` fil
 
 ## API Endpoints 🌐
 
-| Method | Endpoint                     | Description                                   | Access               |
-|--------|------------------------------|-----------------------------------------------|----------------------|
-| POST   | `/api/auth/signup`           | Register a new user                           | Public               |
-| POST   | `/api/auth/signin`           | Login a user and get the authentication token | Public               |
-| GET    | `/api/rooms`                 | Retrieve a list of all rooms                  | Public               |
-| POST   | `/api/rooms`                 | Create a new room                             | HOTEL                |
-| GET    | `/api/user`                  | Retrieve the authenticated user’s details     | Authenticated        |
-| GET    | `/api/user/all`              | Retrieve all users                            | HOTEL, ADMIN         |
-| PUT    | `/api/user/update/password`  | Update the authenticated user’s password      | Authenticated        |
-| PUT    | `/api/user/update/personal`  | Update the user’s personal data               | Authenticated, ADMIN |
-| POST   | `/api/user/create`           | Create a new user with specific role          | ADMIN                |
-| DELETE | `/api/user/{username}`       | Delete a user                                 | ADMIN                |
-| GET    | `/api/user/search`           | Search for users based on some criteria       | HOTEL, ADMIN         |
-| GET    | `/api/user/find`             | Find a specific user by ID, username or email | HOTEL, ADMIN         |
-| GET    | `/api/guest/all`             | Retrieve all guests                           | HOTEL, ADMIN         |
-| PUT    | `/api/guest/update/personal` | Update the guest's personal data              | HOTEL, ADMIN         |
-| POST   | `/api/guest/create`          | Create a new guest                            | HOTEL, ADMIN         |
-| GET    | `/api/hotel/**`              | Access hotel-related endpoints                | HOTEL, ADMIN         |
+| Method | Endpoint                      | Description                                   | Access               |
+|--------|-------------------------------|-----------------------------------------------|----------------------|
+| POST   | `/api/auth/signup`            | Register a new user                           | Public               |
+| POST   | `/api/auth/signin`            | Login a user and get the authentication token | Public               |
+| GET    | `/api/rooms`                  | Retrieve a list of all rooms                  | Public               |
+| POST   | `/api/rooms`                  | Create a new room                             | HOTEL                |
+| GET    | `/api/user`                   | Retrieve the authenticated user’s details     | Authenticated        |
+| GET    | `/api/user/all`               | Retrieve all users                            | HOTEL, ADMIN         |
+| PUT    | `/api/user/update/password`   | Update the authenticated user’s password      | Authenticated        |
+| PUT    | `/api/user/update/personal`   | Update the user’s personal data               | Authenticated, ADMIN |
+| POST   | `/api/user/create`            | Create a new user with specific role          | ADMIN                |
+| DELETE | `/api/user/{username}`        | Delete a user                                 | ADMIN                |
+| GET    | `/api/user/search`            | Search for users based on some criteria       | HOTEL, ADMIN         |
+| GET    | `/api/user/find`              | Find a specific user by ID, username or email | HOTEL, ADMIN         |
+| GET    | `/api/guest/all`              | Retrieve all guests                           | HOTEL, ADMIN         |
+| PUT    | `/api/guest/update/personal`  | Update the guest's personal data              | HOTEL, ADMIN         |
+| POST   | `/api/guest/create`           | Create a new guest                            | HOTEL, ADMIN         |
+| GET    | `/api/hotel/allGuests`        | Retrieve all Users and Guests                | HOTEL, ADMIN         |
+| GET    | `/api/hotel/searchGuests`     | Search for Users and Guests based on some criteria     | HOTEL, ADMIN         |
+| GET    | `/api/hotel/findGuest`        | Find a specific Guest or User by ID                | HOTEL, ADMIN         |
 
 The API is also documented using Swagger UI, which allows you to test endpoints directly from your browser.
 

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class PersonRequest {
+public class PersonRequest {
     private Long id;
     private String email;
     private String firstName;

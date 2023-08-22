@@ -7,6 +7,7 @@ import com.danielszulc.roomreserve.model.Guest;
 import com.danielszulc.roomreserve.repository.GuestRepository;
 import com.danielszulc.roomreserve.repository.PersonRepository;
 import com.danielszulc.roomreserve.service.GuestService;
+import com.danielszulc.roomreserve.service.UserValidator;
 import com.danielszulc.roomreserve.utils.SpecificationUtils;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,8 @@ public class GuestServiceImpl extends PersonServiceImpl<Guest> implements GuestS
 
     private final GuestRepository guestRepository;
 
+    private final UserValidator userValidator;
+
     @Override
     public PersonRepository<Guest> getRepository() {
         return guestRepository;
@@ -30,6 +33,7 @@ public class GuestServiceImpl extends PersonServiceImpl<Guest> implements GuestS
 
     @Override
     public PersonDTO createGuest(Guest guest) {
+        userValidator.validateEmailAvailability(guest.getEmail());
         Guest savedGuest = guestRepository.save(guest);
         return userMapper.convertToDTO(savedGuest);
     }

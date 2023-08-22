@@ -7,6 +7,7 @@ import java.util.Collection;
 
 public interface UserValidator {
     void validateUsernameAndEmailAvailability(String username, String email);
+    void validateEmailAvailability(String email);
     void validatePassword(String encodedPassword, String providedPassword);
     void validateAdminPermissions(User user);
     void validateHotelPermissions(User user);

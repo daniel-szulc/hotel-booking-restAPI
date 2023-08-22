@@ -1,10 +1,9 @@
-package com.danielszulc.roomreserve;
+package com.danielszulc.roomreserve.controller;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.danielszulc.roomreserve.controller.AuthController;
 import com.danielszulc.roomreserve.dto.AuthenticationResponse;
 import com.danielszulc.roomreserve.dto.SignIn;
 import com.danielszulc.roomreserve.dto.SignUp;
@@ -22,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthControllerTest {
+class AuthControllerTest {
 
     @InjectMocks
     private AuthController authController;
@@ -39,7 +38,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void registerUser_ShouldReturnUser_WhenUserIsSuccessfullyRegistered() throws Exception {
+    void registerUser_ShouldReturnUser_WhenUserIsSuccessfullyRegistered() throws Exception {
         SignUp signUpDto = new SignUp();
         signUpDto.setUsername("testUser");
         signUpDto.setEmail("test@email.com");
@@ -63,7 +62,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void login_ShouldReturnAuthenticationResponse_WhenCredentialsAreValid() throws Exception {
+    void login_ShouldReturnAuthenticationResponse_WhenCredentialsAreValid() throws Exception {
         SignIn signInDto = new SignIn();
         signInDto.setUsername("testUsername");
         signInDto.setPassword("testPassword");

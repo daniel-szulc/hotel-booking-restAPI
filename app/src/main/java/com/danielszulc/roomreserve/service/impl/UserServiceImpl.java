@@ -4,7 +4,6 @@ import com.danielszulc.roomreserve.config.JwtTokenUtil;
 import com.danielszulc.roomreserve.dto.*;
 import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.exception.*;
-import com.danielszulc.roomreserve.mapper.UserMapper;
 import com.danielszulc.roomreserve.model.User;
 import com.danielszulc.roomreserve.repository.PersonRepository;
 import com.danielszulc.roomreserve.repository.UserRepository;
@@ -24,12 +23,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl extends PersonServiceImpl<User> implements UserService {
 
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found!";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtUtil;
@@ -72,7 +73,7 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
     @Override
     public String deleteUserByUsername(String username) {
         User userToDelete = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE));
 
         User currentUser = getCurrentLoggedInUser();
 
@@ -105,9 +106,9 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
         User currentUser = getCurrentLoggedInUser();
         User user;
 
-        if(currentUser.getUsername() == userRequest.getUsername()
-                || currentUser.getId() == userRequest.getId()
-                || currentUser.getEmail() == userRequest.getEmail())
+        if(Objects.equals(currentUser.getUsername(), userRequest.getUsername())
+                || Objects.equals(currentUser.getId(), userRequest.getId())
+                || Objects.equals(currentUser.getEmail(), userRequest.getEmail()))
         {
             userValidator.validatePassword(currentUser.getPassword(), userRequest.getPassword());
             user = currentUser;
@@ -116,7 +117,7 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
         {
             userValidator.validateAdminPermissions(currentUser);
             user = userRepository.findByUsername(userRequest.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE));
         }
 
         userRequest.setId(user.getId());
@@ -128,7 +129,9 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
     public PersonDTO createUserByAdmin(SignUp signUpDto) {
         Role role = determineUserRole(signUpDto.getRole());
         userValidator.validateAdminPermissions(getCurrentLoggedInUser());
-
+        userValidator.validateUsernameAndEmailAvailability(
+                signUpDto.getUsername(), signUpDto.getEmail()
+        );
         User user = userMapper.convertToEntity(signUpDto, role);
         User savedUser = userRepository.save(user);
         return userMapper.convertToDTO(savedUser);
@@ -143,7 +146,7 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
     private User getCurrentLoggedInUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE));
     }
 
     private Role determineUserRole(String requestedRole) {
