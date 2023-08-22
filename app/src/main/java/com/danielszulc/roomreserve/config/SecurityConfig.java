@@ -71,18 +71,25 @@ public class SecurityConfig {
                                         "/swagger-ui.html").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/signin").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/rooms/**").hasAnyRole("HOTEL", "ADMIN")
+
+                                .requestMatchers(HttpMethod.POST,"/api/rooms/**").hasRole( "ADMIN")
+                                .requestMatchers(HttpMethod.PUT,"/api/rooms/**").hasRole( "ADMIN")
+                                .requestMatchers(HttpMethod.DELETE,"/api/rooms/**").hasRole( "ADMIN")
+                                .requestMatchers("/api/rooms/all").hasAnyRole("HOTEL", "ADMIN")
+                                .requestMatchers("/api/rooms/occupied").hasAnyRole("HOTEL", "ADMIN")
+                                .requestMatchers("/api/rooms/available").hasAnyRole("HOTEL", "ADMIN")
                                 .requestMatchers("/api/rooms/**").permitAll()
+
                                 .requestMatchers("/api/reservation").authenticated()
+
                                 .requestMatchers(HttpMethod.POST,"/api/user/create").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/api/user/update/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/api/user/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/user/search").hasAnyRole("HOTEL", "ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/user/find").hasAnyRole("HOTEL", "ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/user/**").authenticated()
+
                                 .requestMatchers( "/api/guest/**").hasAnyRole("HOTEL", "ADMIN")
-                                .requestMatchers("/api/client/**").authenticated()
-                                .requestMatchers("/api/admin").hasRole("ADMIN")
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/hotel/**").hasAnyRole("HOTEL", "ADMIN")
                                 .anyRequest().authenticated()

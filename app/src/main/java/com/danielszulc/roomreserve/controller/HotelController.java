@@ -5,6 +5,7 @@ import com.danielszulc.roomreserve.dto.PersonRequest;
 import com.danielszulc.roomreserve.dto.PersonDTO;
 import com.danielszulc.roomreserve.dto.UserSearchRequest;
 import com.danielszulc.roomreserve.service.GuestService;
+import com.danielszulc.roomreserve.service.ReservationService;
 import com.danielszulc.roomreserve.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class HotelController {
 
     private GuestService guestService;
     private UserService userService;
+    private ReservationService reservationService;
 
     @GetMapping("/allGuests")
     public ResponseEntity<List<PersonDTO>> getAll()
@@ -58,5 +60,23 @@ public class HotelController {
     ) {
         PersonDTO personDTO = userService.findUserByIdOrEmailOrUsername(id, email, username);
         return new ResponseEntity<>(personDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/checkin/{reservationId}")
+    public ResponseEntity<String> checkIn(@PathVariable Long reservationId) {
+        String res = reservationService.checkIn(reservationId);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @PostMapping("/checkout/{reservationId}")
+    public ResponseEntity<String> checkOut(@PathVariable Long reservationId) {
+        String res = reservationService.checkOut(reservationId);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @PostMapping("/confirmReservation/{reservationId}")
+    public ResponseEntity<String> confirm(@PathVariable Long reservationId) {
+        String res = reservationService.confirmReservation(reservationId);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

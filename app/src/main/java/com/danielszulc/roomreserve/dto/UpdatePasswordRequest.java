@@ -1,5 +1,6 @@
 package com.danielszulc.roomreserve.dto;
 
+import com.danielszulc.roomreserve.utils.ValidPassword;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdatePasswordRequest {
 
-    @NotNull
+    @NotNull @ValidPassword
     private String newPassword;
 
     @NotNull
