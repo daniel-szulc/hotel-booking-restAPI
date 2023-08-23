@@ -12,6 +12,9 @@ public interface UserValidator {
     void validateAdminPermissions(User user);
     void validateHotelPermissions(User user);
     void validateAdminOrHotelPermissions(User user);
+    void validateAdminPermissions();
+    void validateHotelPermissions();
+    void validateAdminOrHotelPermissions();
     void validatePermissions(User user, Role role);
     void validatePermissions(User user, Collection<Role> allowedRoles);
 }

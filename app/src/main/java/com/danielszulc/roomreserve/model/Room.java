@@ -12,12 +12,13 @@ public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String number;
     private Integer noOfPerson;
     @Enumerated(EnumType.STRING)
     private RoomType type;
     private double price;
-    private boolean isAvailable;
+    private boolean isOccupied;
     @OneToMany(mappedBy = "room", fetch = FetchType.EAGER)
     private List<Reservation> reservations;
 }

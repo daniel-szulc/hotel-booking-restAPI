@@ -61,8 +61,15 @@ Set the database URL, username, and password in the `application.properties` fil
 |--------|-------------------------------|-----------------------------------------------|----------------------|
 | POST   | `/api/auth/signup`            | Register a new user                           | Public               |
 | POST   | `/api/auth/signin`            | Login a user and get the authentication token | Public               |
-| GET    | `/api/rooms`                  | Retrieve a list of all rooms                  | Public               |
-| POST   | `/api/rooms`                  | Create a new room                             | HOTEL                |
+| GET    | `/api/rooms/available`        | Retrieve a list of available rooms between given dates | Public         |
+| GET    | `/api/rooms/{id}`             | Retrieve room details by ID                   | Public               |
+| GET    | `/api/rooms/room/{roomNumber}`| Retrieve room by room number                  | Public               |
+| GET    | `/api/rooms/all`              | Retrieve all rooms as RoomDTO                 | Public               |
+| GET    | `/api/rooms/occupied`         | Retrieve all currently occupied rooms         | HOTEL, ADMIN         |
+| GET    | `/api/rooms/availableNow`     | Retrieve all currently available rooms        | Public               |
+| POST   | `/api/rooms/create`           | Create a new room                             | ADMIN         |
+| PUT    | `/api/rooms/update`           | Update an existing room                       | ADMIN         |
+| DELETE | `/api/rooms/{id}`             | Delete a room by ID                           | ADMIN         |
 | GET    | `/api/user`                   | Retrieve the authenticated user’s details     | Authenticated        |
 | GET    | `/api/user/all`               | Retrieve all users                            | HOTEL, ADMIN         |
 | PUT    | `/api/user/update/password`   | Update the authenticated user’s password      | Authenticated        |
@@ -74,9 +81,13 @@ Set the database URL, username, and password in the `application.properties` fil
 | GET    | `/api/guest/all`              | Retrieve all guests                           | HOTEL, ADMIN         |
 | PUT    | `/api/guest/update/personal`  | Update the guest's personal data              | HOTEL, ADMIN         |
 | POST   | `/api/guest/create`           | Create a new guest                            | HOTEL, ADMIN         |
-| GET    | `/api/hotel/allGuests`        | Retrieve all Users and Guests                | HOTEL, ADMIN         |
-| GET    | `/api/hotel/searchGuests`     | Search for Users and Guests based on some criteria     | HOTEL, ADMIN         |
-| GET    | `/api/hotel/findGuest`        | Find a specific Guest or User by ID                | HOTEL, ADMIN         |
+| GET    | `/api/hotel/allGuests`        | Retrieve all Users and Guests                 | HOTEL, ADMIN         |
+| GET    | `/api/hotel/searchGuests`     | Search for Users and Guests based on some criteria | HOTEL, ADMIN   |
+| GET    | `/api/hotel/findGuest`         | Find a specific Guest or User by ID           | HOTEL, ADMIN         |
+| POST   | `/api/hotel/checkin/{reservationId}`  | Check-in with a given reservation ID  | HOTEL, ADMIN         |
+| POST   | `/api/hotel/checkout/{reservationId}` | Check-out with a given reservation ID | HOTEL, ADMIN         |
+| POST   | `/api/hotel/confirmReservation/{reservationId}` | Confirm a given reservation ID | HOTEL, ADMIN |
+
 
 The API is also documented using Swagger UI, which allows you to test endpoints directly from your browser.
 

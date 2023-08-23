@@ -7,6 +7,7 @@ import com.danielszulc.roomreserve.repository.GuestRepository;
 import com.danielszulc.roomreserve.repository.UserRepository;
 import com.danielszulc.roomreserve.service.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,8 @@ import java.util.List;
 
 @Service
 public class UserValidatorImpl implements UserValidator {
+
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found!";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -58,10 +61,20 @@ public class UserValidatorImpl implements UserValidator {
     }
 
     @Override
+    public void validateAdminPermissions() {
+       validateAdminPermissions(getCurrentLoggedInUser());
+    }
+
+    @Override
     public void validateHotelPermissions(User user) {
         if (!user.getRole().equals(Role.ROLE_HOTEL)) {
             throw new AccessDeniedException("\"Unauthorized access. This operation is restricted to hotel staff only.");
         }
+    }
+
+    @Override
+    public void validateHotelPermissions() {
+        validateHotelPermissions(getCurrentLoggedInUser());
     }
 
     @Override
@@ -71,6 +84,11 @@ public class UserValidatorImpl implements UserValidator {
         if (!(userRole.equals(Role.ROLE_ADMIN) || userRole.equals(Role.ROLE_HOTEL))) {
             throw new AccessDeniedException("Unauthorized access. This operation is restricted to administrators and hotel staff.");
         }
+    }
+
+    @Override
+    public void validateAdminOrHotelPermissions() {
+        validateAdminOrHotelPermissions(getCurrentLoggedInUser());
     }
 
     @Override
@@ -90,6 +108,12 @@ public class UserValidatorImpl implements UserValidator {
 
             throw new AccessDeniedException("Unauthorized access. This operation is restricted to " + allowedRolesString + " only.");
         }
+    }
+
+    private User getCurrentLoggedInUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(email)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE));
     }
 
 }

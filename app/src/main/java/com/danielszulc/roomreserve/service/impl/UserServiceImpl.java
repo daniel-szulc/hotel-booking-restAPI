@@ -48,9 +48,8 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
         userValidator.validateUsernameAndEmailAvailability(
                 signUpDto.getUsername(), signUpDto.getEmail()
         );
-
-
-        User user = userMapper.convertToEntity(signUpDto, Role.ROLE_CLIENT);
+        signUpDto.setRole(null); // Prevents the user from setting his own role
+        User user = userMapper.convertToEntity(signUpDto);
         User savedUser = userRepository.save(user);
         return userMapper.convertToDTO(savedUser);
     }
@@ -127,12 +126,11 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
 
     @Override
     public PersonDTO createUserByAdmin(SignUp signUpDto) {
-        Role role = determineUserRole(signUpDto.getRole());
         userValidator.validateAdminPermissions(getCurrentLoggedInUser());
         userValidator.validateUsernameAndEmailAvailability(
                 signUpDto.getUsername(), signUpDto.getEmail()
         );
-        User user = userMapper.convertToEntity(signUpDto, role);
+        User user = userMapper.convertToEntity(signUpDto);
         User savedUser = userRepository.save(user);
         return userMapper.convertToDTO(savedUser);
     }
@@ -147,10 +145,6 @@ public class UserServiceImpl extends PersonServiceImpl<User> implements UserServ
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(email)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE));
-    }
-
-    private Role determineUserRole(String requestedRole) {
-        return (requestedRole != null) ? Role.valueOf(requestedRole) : Role.ROLE_CLIENT;
     }
 
     @Override

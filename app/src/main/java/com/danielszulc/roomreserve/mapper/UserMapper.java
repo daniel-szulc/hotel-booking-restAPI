@@ -21,18 +21,18 @@ public class UserMapper<T> {
     }
 
     public User convertToEntity(SignUp signUpDto){
-        return convertToEntity(signUpDto, Role.ROLE_CLIENT);
-    }
-
-    public User convertToEntity(SignUp signUpDto, Role role){
         User user = new User();
         user.setUsername(signUpDto.getUsername());
         user.setEmail(signUpDto.getEmail());
         user.setFirstName(signUpDto.getFirstName());
         user.setLastName(signUpDto.getLastName());
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        Role role = determineUserRole(signUpDto.getRole());
         user.setRole(role);
         return user;
+    }
+    private Role determineUserRole(String requestedRole) {
+        return (requestedRole != null) ? Role.valueOf(requestedRole.toUpperCase()) : Role.ROLE_CLIENT;
     }
 
 }

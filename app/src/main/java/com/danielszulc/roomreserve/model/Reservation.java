@@ -5,7 +5,7 @@ import com.danielszulc.roomreserve.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -17,8 +17,8 @@ public class Reservation {
     private Person guest;
     @ManyToOne
     private Room room;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Integer noOfPerson;
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;

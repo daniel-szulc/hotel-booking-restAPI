@@ -1,5 +1,7 @@
 package com.danielszulc.roomreserve.controller;
 
+import com.danielszulc.roomreserve.dto.RoomDTO;
+import com.danielszulc.roomreserve.dto.RoomRequest;
 import com.danielszulc.roomreserve.model.Room;
 import com.danielszulc.roomreserve.service.RoomService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +24,7 @@ public class RoomController {
     private RoomService roomService;
 
     @GetMapping("/available")
-    public List<Room> getAvailableRooms(
+    public List<RoomDTO> getAvailableRooms(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return roomService.getAvailableRooms(startDate, endDate);
@@ -33,9 +35,14 @@ public class RoomController {
         return roomService.getRoomById(id);
     }
 
+    @GetMapping("/room/{roomNumber}")
+    public Room getRoomByNumber(@PathVariable String roomNumber) {
+        return roomService.getRoomByNumber(roomNumber);
+    }
+
     @GetMapping("/all")
-    public ResponseEntity<List<Room>> getAll() {
-        List<Room> rooms = roomService.getAll();
+    public ResponseEntity<List<RoomDTO>> getAll() {
+        List<RoomDTO> rooms = roomService.getAll();
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 
@@ -45,26 +52,26 @@ public class RoomController {
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 
-    @GetMapping("/available")
-    public ResponseEntity<List<Room>> getAvailable() {
-        List<Room> rooms = roomService.getCurrentlyAvailableRooms();
+    @GetMapping("/availableNow")
+    public ResponseEntity<List<RoomDTO>> getAvailable() {
+        List<RoomDTO> rooms = roomService.getCurrentlyAvailableRooms();
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Room> createRoom(@Valid @RequestBody Room room) {
-        Room res = roomService.createRoom(room);
+    public ResponseEntity<Room> createRoom(@Valid @RequestBody RoomRequest roomRequest) {
+        Room res = roomService.createRoom(roomRequest);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateRoom(@Valid @RequestBody Room room) {
+    public ResponseEntity<String> updateRoom(@Valid @RequestBody RoomDTO room) {
         String res = roomService.updateRoom(room);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public  ResponseEntity<String>  deleteRoom(@PathVariable Long id) {
+    public  ResponseEntity<String> deleteRoom(@PathVariable Long id) {
         String res = roomService.deleteRoom(id);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
