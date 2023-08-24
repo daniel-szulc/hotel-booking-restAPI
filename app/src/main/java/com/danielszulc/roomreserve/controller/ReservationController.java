@@ -1,6 +1,7 @@
 package com.danielszulc.roomreserve.controller;
 
-import com.danielszulc.roomreserve.model.Reservation;
+import com.danielszulc.roomreserve.dto.ReservationDTO;
+import com.danielszulc.roomreserve.dto.ReservationRequest;
 import com.danielszulc.roomreserve.service.ReservationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,21 +20,21 @@ public class ReservationController {
 
     private ReservationService reservationService;
 
-    @PostMapping("/book}")
-    public ResponseEntity<Reservation> createReservation(@Valid @RequestBody Reservation reservation) {
-        Reservation res = reservationService.createReservation(reservation);
+    @PostMapping("/createReservation")
+    public ResponseEntity<ReservationDTO> createReservation(@Valid @RequestBody ReservationRequest reservation) {
+        ReservationDTO res = reservationService.createReservation(reservation);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> getReservationById(@PathVariable Long id) {
-        Reservation res = reservationService.getReservationById(id);
+    public ResponseEntity<ReservationDTO> getReservationById(@PathVariable Long id) {
+        ReservationDTO res = reservationService.getReservationById(id);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @GetMapping("/guest/{id}")
-    public ResponseEntity<List<Reservation>>  getReservationsByGuestId(@PathVariable Long id) {
-        List<Reservation> res = reservationService.getReservationsByGuestId(id);
+    public ResponseEntity<List<ReservationDTO>>  getReservationsByGuestId(@PathVariable Long id) {
+        List<ReservationDTO> res = reservationService.getReservationsByGuestId(id);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
@@ -44,19 +45,19 @@ public class ReservationController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Reservation>> getAllReservations() {
-        List<Reservation> res = reservationService.getAllReservations();
+    public ResponseEntity<List<ReservationDTO>> getAllReservations() {
+        List<ReservationDTO> res = reservationService.getAllReservations();
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<Reservation>> getMyReservations() {
-        List<Reservation> res =  reservationService.getMyReservations();
+    public ResponseEntity<List<ReservationDTO>> getMyReservations() {
+        List<ReservationDTO> res =  reservationService.getMyReservations();
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateReservation(@Valid @RequestBody Reservation reservation) {
+    public ResponseEntity<String> updateReservation(@Valid @RequestBody ReservationRequest reservation) {
         String res = reservationService.updateReservation(reservation);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }

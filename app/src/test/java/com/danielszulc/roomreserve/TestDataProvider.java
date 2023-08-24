@@ -1,10 +1,17 @@
 package com.danielszulc.roomreserve;
 
 import com.danielszulc.roomreserve.dto.*;
+import com.danielszulc.roomreserve.enums.PaymentType;
+import com.danielszulc.roomreserve.enums.ReservationStatus;
 import com.danielszulc.roomreserve.enums.Role;
+import com.danielszulc.roomreserve.enums.RoomType;
 import com.danielszulc.roomreserve.model.Guest;
+import com.danielszulc.roomreserve.model.Reservation;
+import com.danielszulc.roomreserve.model.Room;
 import com.danielszulc.roomreserve.model.User;
 import org.springframework.beans.BeanUtils;
+
+import java.time.LocalDate;
 
 public class TestDataProvider {
 
@@ -71,5 +78,52 @@ public class TestDataProvider {
         BeanUtils.copyProperties(getSampleGuest(), personDTO);
         return personDTO;
     }
+
+    public Room getSampleRoom() {
+        Room room = new Room();
+        room.setId(10L);
+        room.setType(RoomType.DOUBLE);
+        room.setOccupied(false);
+        room.setNumber("101");
+        room.setNoOfPerson(2);
+        return room;
+    }
+    public RoomDTO getSampleRoomDTO() {
+        RoomDTO room = new RoomDTO();
+        BeanUtils.copyProperties(getSampleRoom(), room);
+        return room;
+    }
+
+
+    public Reservation getSampleReservation() {
+        Reservation reservation = new Reservation();
+        reservation.setId(5L);
+        reservation.setGuest(getSampleGuest());
+        reservation.setRoom(getSampleRoom());
+        reservation.setStartDate(LocalDate.of(2023, 9, 1));
+        reservation.setEndDate(LocalDate.of(2023, 9, 5));
+        reservation.setNoOfPerson(2);
+        reservation.setPayment(PaymentType.CREDIT_CARD);
+        reservation.setStatus(ReservationStatus.PENDING);
+        return reservation;
+    }
+
+    public ReservationDTO getSampleReservationDTO() {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        BeanUtils.copyProperties(getSampleReservation(), reservationDTO);
+        reservationDTO.setGuest(getSampleGuestAsPersonDTO());
+        reservationDTO.setRoom(getSampleRoomDTO());
+        return reservationDTO;
+    }
+
+    public ReservationRequest getSampleReservationRequest() {
+        ReservationRequest request = new ReservationRequest();
+        BeanUtils.copyProperties(getSampleReservation(), request);
+        request.setGuestId(3L);
+        request.setRoomId(10L);
+        request.setPayment("CREDIT_CARD");
+        return request;
+    }
+
 
 }

@@ -115,5 +115,11 @@ public class UserValidatorImpl implements UserValidator {
         return userRepository.findByUsername(email)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE));
     }
+    @Override
+    public Long getCurrentLoggedInUserId() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(email)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE)).getId();
+    }
 
 }

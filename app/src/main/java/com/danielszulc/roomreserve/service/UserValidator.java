@@ -17,4 +17,5 @@ public interface UserValidator {
     void validateAdminOrHotelPermissions();
     void validatePermissions(User user, Role role);
     void validatePermissions(User user, Collection<Role> allowedRoles);
+    Long getCurrentLoggedInUserId();
 }

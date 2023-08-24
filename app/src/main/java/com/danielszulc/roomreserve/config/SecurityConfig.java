@@ -80,6 +80,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/rooms/available").hasAnyRole("HOTEL", "ADMIN")
                                 .requestMatchers("/api/rooms/**").permitAll()
 
+                                .requestMatchers(HttpMethod.DELETE,"/api/reservation").hasAnyRole("HOTEL", "ADMIN")
+                                .requestMatchers("/api/reservation/all").hasAnyRole("HOTEL", "ADMIN")
+                                .requestMatchers(HttpMethod.POST,"/api/reservation/update").hasAnyRole("HOTEL", "ADMIN")
                                 .requestMatchers("/api/reservation").authenticated()
 
                                 .requestMatchers(HttpMethod.POST,"/api/user/create").hasRole("ADMIN")

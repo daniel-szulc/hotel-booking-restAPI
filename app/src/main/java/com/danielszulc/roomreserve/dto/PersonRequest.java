@@ -18,7 +18,7 @@ public class PersonRequest {
     private String email;
     private String firstName;
     private String lastName;
-    @Size(min = 10)
+    @Size(min = 9)
     private String phone;
     private Address address;
     @Enumerated(EnumType.STRING)

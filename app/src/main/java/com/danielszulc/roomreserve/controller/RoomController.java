@@ -31,12 +31,12 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public Room getRoomById(@PathVariable Long id) {
+    public RoomDTO getRoomById(@PathVariable Long id) {
         return roomService.getRoomById(id);
     }
 
     @GetMapping("/room/{roomNumber}")
-    public Room getRoomByNumber(@PathVariable String roomNumber) {
+    public RoomDTO getRoomByNumber(@PathVariable String roomNumber) {
         return roomService.getRoomByNumber(roomNumber);
     }
 
@@ -47,8 +47,8 @@ public class RoomController {
     }
 
     @GetMapping("/occupied")
-    public ResponseEntity<List<Room>> getOccupied() {
-        List<Room> rooms = roomService.getCurrentlyOccupiedRooms();
+    public ResponseEntity<List<RoomDTO>> getOccupied() {
+        List<RoomDTO> rooms = roomService.getCurrentlyOccupiedRooms();
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 

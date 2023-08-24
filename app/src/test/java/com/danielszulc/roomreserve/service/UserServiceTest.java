@@ -3,7 +3,6 @@ package com.danielszulc.roomreserve.service;
 import com.danielszulc.roomreserve.TestDataProvider;
 import com.danielszulc.roomreserve.config.JwtTokenUtil;
 import com.danielszulc.roomreserve.dto.*;
-import com.danielszulc.roomreserve.enums.Role;
 import com.danielszulc.roomreserve.exception.EmailTakenException;
 import com.danielszulc.roomreserve.exception.InvalidPasswordException;
 import com.danielszulc.roomreserve.exception.UsernameTakenException;
@@ -83,7 +82,7 @@ class UserServiceTest{
                 .when(userValidator)
                 .validateUsernameAndEmailAvailability(anyString(), anyString());
 
-        when(userMapper.convertToEntity(any(SignUp.class), any(Role.class))).thenReturn(user);
+        when(userMapper.convertToEntity(any(SignUp.class))).thenReturn(user);
         when(userMapper.convertToDTO(any(User.class))).thenReturn(personDTO);
 
         PersonDTO result = userService.registerUser(signUpDto);

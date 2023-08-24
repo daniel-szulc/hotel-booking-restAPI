@@ -10,11 +10,11 @@ import java.util.List;
 public interface RoomService {
 
     List<RoomDTO> getAll();
-    Room getRoomById(Long id);
-    Room getRoomByNumber(String number);
+    RoomDTO getRoomById(Long id);
+    RoomDTO getRoomByNumber(String number);
     String deleteRoom(Long id);
     List<RoomDTO> getAvailableRooms(LocalDate startDate, LocalDate endDate);
-    List<Room> getCurrentlyOccupiedRooms();
+    List<RoomDTO> getCurrentlyOccupiedRooms();
     List<RoomDTO> getCurrentlyAvailableRooms();
     Room createRoom(RoomRequest roomRequest);
     String updateRoom(RoomDTO room);

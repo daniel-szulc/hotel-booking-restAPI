@@ -1,19 +1,20 @@
 package com.danielszulc.roomreserve.service;
 
-import com.danielszulc.roomreserve.model.Reservation;
+import com.danielszulc.roomreserve.dto.ReservationDTO;
+import com.danielszulc.roomreserve.dto.ReservationRequest;
 
 import java.util.List;
 
 public interface ReservationService {
-    Reservation createReservation(Reservation reservation);
+    ReservationDTO createReservation(ReservationRequest reservation);
     String cancelReservation(Long reservationId);
-    String updateReservation(Reservation reservation);
+    String updateReservation(ReservationRequest reservation);
     String checkIn(Long reservationId);
     String checkOut(Long reservationId);
     String confirmReservation(Long reservationId);
-    List<Reservation> getAllReservations();
-    List<Reservation> getMyReservations();
-    List<Reservation> getReservationsByGuestId(Long guestId);
-    Reservation getReservationById(Long reservationId);
+    List<ReservationDTO> getAllReservations();
+    List<ReservationDTO> getMyReservations();
+    List<ReservationDTO> getReservationsByGuestId(Long guestId);
+    ReservationDTO getReservationById(Long reservationId);
 
 }

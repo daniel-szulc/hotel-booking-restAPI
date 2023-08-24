@@ -2,7 +2,6 @@ package com.danielszulc.roomreserve.service.impl;
 
 import com.danielszulc.roomreserve.dto.RoomDTO;
 import com.danielszulc.roomreserve.dto.RoomRequest;
-import com.danielszulc.roomreserve.exception.AccessDeniedException;
 import com.danielszulc.roomreserve.exception.RoomNotFoundException;
 import com.danielszulc.roomreserve.mapper.RoomMapper;
 import com.danielszulc.roomreserve.model.Room;
@@ -27,9 +26,6 @@ public class RoomServiceImpl implements RoomService {
     private RoomRepository roomRepository;
 
     @Autowired
-    private UserValidator userValidator;
-
-    @Autowired
     private RoomMapper roomMapper;
 
     @Override
@@ -40,34 +36,22 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional(readOnly = true)
-    public Room getRoomById(Long id) {
+    public RoomDTO getRoomById(Long id) {
 
         Room room = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException("Room not found"));
-
-        try {
-            userValidator.validateAdminOrHotelPermissions();
-        } catch (AccessDeniedException e) {
-            room.setReservations(null);
-        }
-        return room;
+        return roomMapper.convertToDTO(room);
     }
 
     @Override
-    public Room getRoomByNumber(String number) {
+    public RoomDTO getRoomByNumber(String number) {
         Room room = roomRepository.findByNumber(number).orElseThrow(() -> new RoomNotFoundException("Room not found"));
-
-        try {
-            userValidator.validateAdminOrHotelPermissions();
-        } catch (AccessDeniedException e) {
-            room.setReservations(null);
-        }
-        return room;
+        return roomMapper.convertToDTO(room);
     }
 
     @Override
     @Transactional
     public String deleteRoom(Long id) {
-        Room room = getRoomById(id);
+        Room room = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException("Room not found"));
         roomRepository.delete(room);
         return "Room deleted successfully";
     }
@@ -90,8 +74,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Room> getCurrentlyOccupiedRooms() {
-        return roomRepository.findCurrentlyOccupiedRooms();
+    public List<RoomDTO> getCurrentlyOccupiedRooms() {
+        List<Room> rooms = roomRepository.findCurrentlyOccupiedRooms();
+        return rooms.stream().map(roomMapper::convertToDTO).toList();
     }
 
 
